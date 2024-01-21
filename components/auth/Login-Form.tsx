@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 import * as z from 'zod';
 
 import { useForm } from 'react-hook-form';
@@ -24,6 +26,8 @@ import { login } from '@/actions/login';
 import { useTransition } from 'react';
 
 export default function LoginForm() {
+  const [error, setError] = useState<string | undefined>('');
+  const [success, setSuccess] = useState<string | undefined>('');
   const [isPeding, setTransition] = useTransition();
 
   const form = useForm<z.infer<typeof LoginSchema>>({
@@ -35,8 +39,14 @@ export default function LoginForm() {
   });
 
   const onSubmit = (value: z.infer<typeof LoginSchema>) => {
+    setError('');
+    setSuccess('');
+
     setTransition(() => {
-      login(value);
+      login(value).then((data) => {
+        setError(data.error);
+        setSuccess(data.success);
+      });
     });
   };
 
