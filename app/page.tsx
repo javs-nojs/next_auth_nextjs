@@ -1,11 +1,18 @@
-import CardWrapper from '@/components/Wrapper/Card-Wrapper.';
 import Wrapper from '@/components/Wrapper/Wrapper';
-import LoginForm from '@/components/auth/login/Login-Form';
+
+import Link from 'next/link';
+
+import { buttonVariants } from '@/components/ui/button';
 
 export default function Home() {
   return (
     <Wrapper>
-      <LoginForm />
+      <Link
+        href='/auth/login'
+        className={buttonVariants({ variant: 'default' })}
+      >
+        Sign in
+      </Link>
     </Wrapper>
   );
 }
