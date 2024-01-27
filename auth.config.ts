@@ -4,7 +4,7 @@ import prisma from './lib/prisma';
 
 import type { NextAuthConfig } from 'next-auth';
 
-import { loginSchema } from './schema/Login-Schema';
+import { loginSchema } from './schema/login-schema';
 import { compareSync } from 'bcryptjs';
 
 export default {

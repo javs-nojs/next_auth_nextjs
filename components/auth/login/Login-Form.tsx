@@ -20,11 +20,12 @@ import {
 
 import { Input } from '@/components/ui/input';
 
-import { loginSchema } from '@/schema/Login-Schema';
+import { loginSchema } from '@/schema/login-schema';
 import { Button } from '@/components/ui/button';
 
 import ErrorMessage from '../form-message/Error-Message';
 import SuccessMessage from '../form-message/Success-Message';
+
 import { login } from '@/actions/login';
 
 export default function LoginForm() {

@@ -2,8 +2,6 @@
 
 import { useTransition, useState } from 'react';
 
-import { useRouter } from 'next/navigation';
-
 import * as z from 'zod';
 
 import CardWrapper from '@/components/Wrapper/Card-Wrapper.';
@@ -22,11 +20,13 @@ import {
 
 import { Input } from '@/components/ui/input';
 
-import { registerSchema } from '@/schema/Register-Schema';
+import { registerSchema } from '@/schema/register-schema';
+
 import { Button } from '@/components/ui/button';
 
 import ErrorMessage from '../form-message/Error-Message';
 import SuccessMessage from '../form-message/Success-Message';
+
 import { register } from '@/actions/register';
 
 export default function RegisterForm() {
@@ -42,8 +42,6 @@ export default function RegisterForm() {
       password: '',
     },
   });
-
-  const router = useRouter();
 
   const onSubmit = async (fields: z.infer<typeof registerSchema>) => {
     setError('');
