@@ -1,10 +1,8 @@
 'use client';
 
+import { useState, useTransition } from 'react';
+
 import * as z from 'zod';
-
-import { signIn } from '@/auth';
-
-import { AuthError } from 'next-auth';
 
 import CardWrapper from '@/components/Wrapper/Card-Wrapper.';
 
@@ -27,8 +25,13 @@ import { Button } from '@/components/ui/button';
 
 import ErrorMessage from '../form-message/Error-Message';
 import SuccessMessage from '../form-message/Success-Message';
+import { login } from '@/actions/login';
 
 export default function LoginForm() {
+  const [isPending, setTransition] = useTransition();
+  const [error, setError] = useState<string | undefined>('');
+  const [success, setSuccess] = useState<string | undefined>('');
+
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -38,21 +41,15 @@ export default function LoginForm() {
   });
 
   const onSubmit = async (fields: z.infer<typeof loginSchema>) => {
-    console.log('click');
-    try {
-      const { email, password } = fields;
+    setError('');
+    setSuccess('');
 
-      await signIn('credentials', { email, password, redirectTo: '/setting' });
-    } catch (err) {
-      if (err instanceof AuthError) {
-        switch (err.type) {
-          case 'CredentialsSignin':
-            return 'Invalid credentials';
-          default:
-            return "Something wen't wrong!";
-        }
-      }
-    }
+    setTransition(() => {
+      login(fields).then((data) => {
+        setError(data.error);
+        setSuccess(data.success);
+      });
+    });
   };
 
   return (
@@ -73,6 +70,7 @@ export default function LoginForm() {
 
                   <FormControl>
                     <Input
+                      disabled={isPending}
                       type='email'
                       placeholder='jhon@example.com'
                       {...field}
@@ -92,7 +90,12 @@ export default function LoginForm() {
                   <FormLabel>Password</FormLabel>
 
                   <FormControl>
-                    <Input type='password' placeholder='******' {...field} />
+                    <Input
+                      disabled={isPending}
+                      type='password'
+                      placeholder='******'
+                      {...field}
+                    />
                   </FormControl>
 
                   <FormMessage />
@@ -101,10 +104,15 @@ export default function LoginForm() {
             />
           </div>
 
-          {/* <SuccessMessage message='Success' />
-          <ErrorMessage message="Something wen't wrong!" /> */}
+          <SuccessMessage message={success} />
+          <ErrorMessage message={error} />
 
-          <Button type='submit' variant='default' className='w-full'>
+          <Button
+            disabled={isPending}
+            type='submit'
+            variant='default'
+            className='w-full'
+          >
             Sign in
           </Button>
         </form>

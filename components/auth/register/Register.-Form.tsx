@@ -1,6 +1,7 @@
 'use client';
 
 import { useTransition, useState } from 'react';
+
 import { useRouter } from 'next/navigation';
 
 import * as z from 'zod';
@@ -26,12 +27,12 @@ import { Button } from '@/components/ui/button';
 
 import ErrorMessage from '../form-message/Error-Message';
 import SuccessMessage from '../form-message/Success-Message';
+import { register } from '@/actions/register';
 
 export default function RegisterForm() {
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-
   const [isPending, setTransition] = useTransition();
+  const [error, setError] = useState<string | undefined>('');
+  const [success, setSuccess] = useState<string | undefined>('');
 
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -46,28 +47,14 @@ export default function RegisterForm() {
 
   const onSubmit = async (fields: z.infer<typeof registerSchema>) => {
     setError('');
-    setSuccess(false);
+    setSuccess('');
 
-    try {
-      const response = await fetch('http://localhost:3000/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(fields),
+    setTransition(() => {
+      register(fields).then((data) => {
+        setError(data.error);
+        setSuccess(data.success);
       });
-
-      if (!response.ok)
-        throw new Error(`Error: ${response.status} - ${response.statusText}`);
-
-      setSuccess(response.statusText);
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setTimeout(() => {
-        return router.push('/auth/login');
-      }, 700);
-    }
+    });
   };
 
   return (
@@ -87,7 +74,12 @@ export default function RegisterForm() {
                   <FormLabel>Username</FormLabel>
 
                   <FormControl>
-                    <Input type='text' placeholder='jhon example' {...field} />
+                    <Input
+                      disabled={isPending}
+                      type='text'
+                      placeholder='jhon example'
+                      {...field}
+                    />
                   </FormControl>
 
                   <FormMessage />
@@ -104,6 +96,7 @@ export default function RegisterForm() {
 
                   <FormControl>
                     <Input
+                      disabled={isPending}
                       type='email'
                       placeholder='jhon@example.com'
                       {...field}
@@ -123,7 +116,12 @@ export default function RegisterForm() {
                   <FormLabel>Password</FormLabel>
 
                   <FormControl>
-                    <Input type='password' placeholder='******' {...field} />
+                    <Input
+                      disabled={isPending}
+                      type='password'
+                      placeholder='******'
+                      {...field}
+                    />
                   </FormControl>
 
                   <FormMessage />
@@ -135,7 +133,12 @@ export default function RegisterForm() {
           <ErrorMessage message={error} />
           <SuccessMessage message={success} />
 
-          <Button type='submit' variant='default' className='w-full'>
+          <Button
+            disabled={isPending}
+            type='submit'
+            variant='default'
+            className='w-full'
+          >
             Create an account
           </Button>
         </form>

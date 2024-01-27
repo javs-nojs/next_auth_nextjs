@@ -1,6 +1,10 @@
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 
-export default function ErrorMessage({ message }: { message: string }) {
+export default function ErrorMessage({
+  message,
+}: {
+  message: string | undefined;
+}) {
   if (!message) return null;
 
   return (
